@@ -1,5 +1,13 @@
 package com.softwarica.formurlheroesapi;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -9,9 +17,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +34,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+
+    private static final int imageRequestCode =  0;
+
     private EditText etName, etDesc;
     private ImageButton btnimage;
     private ListView listView;
@@ -31,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btnsubmit;
     private Retrofit retrofit;
     private Employee_Interface employee_interface;
+    private String imagePath;
+    private ImageView img;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +71,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnimage = findViewById(R.id.imageButton);
         listView = findViewById(R.id.listView);
         btnsubmit = findViewById(R.id.btnsubmit);
+        img = findViewById(R.id.profileImage);
         btnsubmit.setOnClickListener(this);
+        btnimage.setOnClickListener(this);
     }
     
     
@@ -134,6 +152,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String description = etDesc.getText().toString();
             PutData(username,description);
 
+        }else if (v.getId() == R.id.imageButton){
+            startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"),imageRequestCode);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK && requestCode == imageRequestCode){
+            if(data == null){
+                Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Uri uri = data.getData();
+            imagePath = getPath(uri);
+            Toast.makeText(this, imagePath, Toast.LENGTH_SHORT).show();
+            showimage(imagePath);
+
+        }
+    }
+
+    private void showimage(String imagePath) {
+        File imgFile = new File(imagePath);
+        if(imgFile.exists()){
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            img.setImageBitmap(myBitmap);
+        }
+
+    }
+
+    private String getPath(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        CursorLoader loader =  new CursorLoader(getApplicationContext(), uri, projection,null,null,null);
+        Cursor cursor = loader.loadInBackground();
+        int columnindex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String result = cursor.getString(columnindex);
+        cursor.close();
+        return result;
     }
 }

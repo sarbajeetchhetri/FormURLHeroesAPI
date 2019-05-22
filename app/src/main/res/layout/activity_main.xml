@@ -76,7 +76,7 @@
         app:layout_constraintEnd_toEndOf="@+id/etDesc"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/etDesc"
-        app:layout_constraintTop_toBottomOf="@+id/btnsubmit" />
+        app:layout_constraintTop_toBottomOf="@+id/profileImage" />
 
     <Button
         android:id="@+id/btnsubmit"
@@ -87,4 +87,17 @@
         app:layout_constraintEnd_toEndOf="@+id/etDesc"
         app:layout_constraintStart_toStartOf="@+id/etDesc"
         app:layout_constraintTop_toBottomOf="@+id/etDesc" />
+
+    <ImageView
+        android:id="@+id/profileImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/etDesc"
+        app:layout_constraintStart_toStartOf="@+id/etDesc"
+        app:layout_constraintTop_toBottomOf="@+id/btnsubmit"
+        tools:srcCompat="@tools:sample/avatars"
+        android:src="@drawable/ic_launcher_background"
+        />
 </android.support.constraint.ConstraintLayout>
